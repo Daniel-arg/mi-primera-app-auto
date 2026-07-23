@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Precios — SentinelOne</title>
+  <style>
+    :root {
+      --purple: #5B3FB5;
+      --purple-light: #F0EBFF;
+      --dark: #1A1A1A;
+      --gray: #6B6B6B;
+      --border: #E0DAF0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #F7F6FB;
+      color: var(--dark);
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 460px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: 0 4px 24px rgba(91,63,181,0.06);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--purple);
+      background: var(--purple-light);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    p.sub { color: var(--gray); font-size: 14px; margin: 0 0 24px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 6px; }
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--purple); }
+    .result {
+      margin-top: 26px;
+      background: var(--purple-light);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .result .label { font-size: 13px; color: var(--gray); }
+    .result .amount { font-size: 34px; font-weight: 700; color: var(--purple); margin-top: 4px; }
+    .result .detail { font-size: 12px; color: var(--gray); margin-top: 8px; }
+    footer { margin-top: 22px; text-align: center; font-size: 11px; color: var(--gray); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">TRUE-SEC · DEMO FASE 0</span>
+    <h1>Calculadora de Precios</h1>
+    <p class="sub">SentinelOne — estimación por licencias</p>
+
+    <label for="licencias">Cantidad de licencias</label>
+    <input id="licencias" type="number" min="1" value="25" />
+
+    <label for="plan">Plan</label>
+    <select id="plan">
+      <option value="60">Core — $60 / licencia / año</option>
+      <option value="90" selected>Control — $90 / licencia / año</option>
+      <option value="130">Complete — $130 / licencia / año</option>
+    </select>
+
+    <label for="descuento">Descuento por volumen (%)</label>
+    <input id="descuento" type="number" min="0" max="100" value="0" />
+
+    <div class="result">
+      <div class="label">Precio anual estimado</div>
+      <div class="amount" id="total">$0</div>
+      <div class="detail" id="detalle"></div>
+    </div>
+
+    <footer>Datos de ejemplo. En producción se conectaría a los precios reales.</footer>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    function calcular() {
+      const licencias = Math.max(0, parseInt($("licencias").value) || 0);
+      const precio = parseFloat($("plan").value);
+      const desc = Math.min(100, Math.max(0, parseFloat($("descuento").value) || 0));
+      const bruto = licencias * precio;
+      const neto = bruto * (1 - desc / 100);
+      $("total").textContent = "$" + neto.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      $("detalle").textContent = licencias + " licencias × $" + precio +
+        (desc > 0 ? " · -" + desc + "% descuento" : "");
+    }
+    ["licencias", "plan", "descuento"].forEach((id) =>
+      $(id).addEventListener("input", calcular)
+    );
+    calcular();
+  </script>
+</body>
+</html>
